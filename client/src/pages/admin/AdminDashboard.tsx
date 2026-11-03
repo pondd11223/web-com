@@ -10,6 +10,9 @@ import {
   Settings,
   FileText,
   Cpu,
+  Flame,
+  Tag,
+  Sparkles,
 } from "lucide-react";
 import { api } from "../../api";
 import { LoadingSpinner, ErrorState } from "../../components/common/LoadingSkeleton";
@@ -17,6 +20,7 @@ import type { DashboardStats, ContactMessage } from "../../types";
 
 export function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [promotionsCount, setPromotionsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,11 +31,19 @@ export function AdminDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.getDashboardStats();
-      if (res.success && res.data) {
-        setStats(res.data);
+      const [statsRes, promoRes] = await Promise.all([
+        api.getDashboardStats(),
+        api.getAdminPromotions(),
+      ]);
+
+      if (statsRes.success && statsRes.data) {
+        setStats(statsRes.data);
       } else {
-        setError(res.message || "ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
+        setError(statsRes.message || "ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
+      }
+
+      if (promoRes.success && promoRes.data) {
+        setPromotionsCount(promoRes.data.length);
       }
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
@@ -82,10 +94,17 @@ export function AdminDashboard() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            to="/admin/promotions"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md"
+          >
+            <Flame size={15} />
+            <span>จัดการโปรโมชั่น (Hot Deals)</span>
+          </Link>
           <Link
             to="/admin/services"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-white hover:bg-zinc-800 text-xs font-bold transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-black text-white hover:bg-zinc-800 text-xs font-bold transition-all shadow-sm"
           >
             <span>จัดการสินค้า/สเปกคอม</span>
             <ArrowRight size={14} />
@@ -93,64 +112,82 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* 3 Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* 4 Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1: Unread Messages */}
         <Link
           to="/admin/messages"
-          className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
+          className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
               ข้อความยังไม่ได้อ่าน
             </span>
             <p className="text-3xl font-black text-black">{stats.unreadMessagesCount}</p>
-            <p className="text-xs text-zinc-500">
-              {stats.unreadMessagesCount > 0 ? "มีข้อความขอจัดสเปกคอมใหม่" : "อ่านครบทั้งหมดแล้ว"}
+            <p className="text-[11px] text-zinc-500">
+              {stats.unreadMessagesCount > 0 ? "มีข้อความขอจัดสเปกใหม่" : "อ่านครบทั้งหมดแล้ว"}
             </p>
           </div>
           <div
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
               stats.unreadMessagesCount > 0
                 ? "bg-red-50 text-red-600 border border-red-200 group-hover:bg-red-600 group-hover:text-white"
                 : "bg-zinc-100 text-zinc-700 border border-zinc-200"
             }`}
           >
-            <Mail size={26} />
+            <Mail size={22} />
           </div>
         </Link>
 
         {/* Metric 2: Total Services */}
         <Link
           to="/admin/services"
-          className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
+          className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              สินค้า & สเปกคอมทั้งหมด
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
+              สินค้า & สเปกคอม
             </span>
             <p className="text-3xl font-black text-black">{stats.totalServicesCount}</p>
-            <p className="text-xs text-zinc-500">รายการคอมประกอบและเกมมิ่งเกียร์</p>
+            <p className="text-[11px] text-zinc-500">รายการคอมประกอบทั้งหมด</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-zinc-100 border border-zinc-200 text-black group-hover:bg-black group-hover:text-white flex items-center justify-center transition-colors">
-            <Cpu size={26} />
+          <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200 text-black group-hover:bg-black group-hover:text-white flex items-center justify-center transition-colors">
+            <Cpu size={22} />
           </div>
         </Link>
 
-        {/* Metric 3: Total Categories */}
+        {/* Metric 3: Promotions & Hot Deals */}
         <Link
-          to="/admin/services"
-          className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
+          to="/admin/promotions"
+          className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm hover:shadow-md hover:border-red-600 transition-all flex items-center justify-between group"
         >
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-red-600 uppercase tracking-wider flex items-center gap-1">
+              <Flame size={12} />
+              <span>โปรโมชั่น & ดีลพิเศษ</span>
+            </span>
+            <p className="text-3xl font-black text-black">{promotionsCount}</p>
+            <p className="text-[11px] text-zinc-500">แสดงผลเลื่อนในหน้าแรก</p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-200 text-red-600 group-hover:bg-red-600 group-hover:text-white flex items-center justify-center transition-colors">
+            <Flame size={22} />
+          </div>
+        </Link>
+
+        {/* Metric 4: Total Categories */}
+        <Link
+          to="/admin/services"
+          className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm hover:shadow-md hover:border-black transition-all flex items-center justify-between group"
+        >
+          <div className="space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
               หมวดหมู่สินค้า
             </span>
             <p className="text-3xl font-black text-black">{stats.totalCategoriesCount}</p>
-            <p className="text-xs text-zinc-500">หมวดหมู่ที่เปิดใช้งานในระบบ</p>
+            <p className="text-[11px] text-zinc-500">หมวดหมู่ที่เปิดใช้งาน</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-zinc-100 border border-zinc-200 text-black group-hover:bg-black group-hover:text-white flex items-center justify-center transition-colors">
-            <Layers size={26} />
+          <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200 text-black group-hover:bg-black group-hover:text-white flex items-center justify-center transition-colors">
+            <Layers size={22} />
           </div>
         </Link>
       </div>
@@ -177,16 +214,22 @@ export function AdminDashboard() {
             <p>ยังไม่มีข้อความติดต่อเข้ามาในขณะนี้</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-hidden">
+            <table className="w-full table-fixed text-left text-xs sm:text-sm">
+              <colgroup>
+                <col className="w-[15%]" />
+                <col className="w-[20%]" />
+                <col className="w-[18%]" />
+                <col className="w-[30%]" />
+                <col className="w-[17%]" />
+              </colgroup>
               <thead className="bg-zinc-100 text-[11px] font-bold text-zinc-700 uppercase tracking-wider border-b border-zinc-200">
                 <tr>
-                  <th className="py-3 px-6">สถานะ</th>
-                  <th className="py-3 px-6">ผู้ติดต่อ</th>
-                  <th className="py-3 px-6">เบอร์โทรศัพท์</th>
-                  <th className="py-3 px-6">หัวข้อเรื่อง</th>
-                  <th className="py-3 px-6">วันที่ส่ง</th>
-                  <th className="py-3 px-6 text-right">เปิดอ่าน</th>
+                  <th className="py-3 px-4">สถานะ</th>
+                  <th className="py-3 px-4">ผู้ติดต่อ</th>
+                  <th className="py-3 px-4">เบอร์โทรศัพท์</th>
+                  <th className="py-3 px-4">หัวข้อเรื่อง</th>
+                  <th className="py-3 px-4 text-right">วันที่ส่ง</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200">
@@ -198,35 +241,34 @@ export function AdminDashboard() {
                       !msg.isRead ? "font-bold text-black bg-zinc-50/50" : "text-zinc-700"
                     }`}
                   >
-                    <td className="py-4 px-6 whitespace-nowrap">
+                    <td className="py-3.5 px-4">
                       {!msg.isRead ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                           ยังไม่อ่าน
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-zinc-600 bg-zinc-100 border border-zinc-200">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium text-zinc-600 bg-zinc-100 border border-zinc-200 whitespace-nowrap">
                           <CheckCircle2 size={12} />
                           อ่านแล้ว
                         </span>
                       )}
                     </td>
-                    <td className="py-4 px-6 whitespace-nowrap text-black font-semibold">{msg.name}</td>
-                    <td className="py-4 px-6 whitespace-nowrap text-xs text-zinc-600">{msg.phone}</td>
-                    <td className="py-4 px-6 max-w-xs truncate text-zinc-800">{msg.subject || "ข้อความทั่วไป"}</td>
-                    <td className="py-4 px-6 whitespace-nowrap text-xs text-zinc-500">
-                      {new Date(msg.createdAt).toLocaleString("th-TH", {
+                    <td className="py-3.5 px-4 truncate font-semibold text-black" title={msg.name}>
+                      {msg.name}
+                    </td>
+                    <td className="py-3.5 px-4 truncate text-xs text-zinc-600 font-mono" title={msg.phone}>
+                      {msg.phone}
+                    </td>
+                    <td className="py-3.5 px-4 truncate text-zinc-800" title={msg.subject || msg.message}>
+                      {msg.subject || "ข้อความทั่วไป"}
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-xs text-zinc-500 whitespace-nowrap">
+                      {new Date(msg.createdAt).toLocaleDateString("th-TH", {
                         day: "numeric",
                         month: "short",
                         year: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
                       })}
-                    </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap">
-                      <button className="p-1.5 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg">
-                        <Eye size={16} />
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -237,17 +279,20 @@ export function AdminDashboard() {
       </div>
 
       {/* Quick Shortcuts */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link
-          to="/admin/settings"
-          className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm hover:border-black transition-all flex items-center gap-3.5 group"
+          to="/admin/promotions"
+          className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm hover:border-red-600 transition-all flex items-center gap-3.5 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-            <Settings size={20} />
+          <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors shrink-0">
+            <Flame size={20} />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-black">ตั้งค่าเว็บไซต์</h4>
-            <p className="text-xs text-zinc-500">แก้ไขข้อมูลติดต่อ แผนที่ และ Social</p>
+            <h4 className="text-sm font-bold text-black flex items-center gap-1.5">
+              <span>จัดการโปรโมชั่น</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">HOT</span>
+            </h4>
+            <p className="text-xs text-zinc-500 mt-0.5 font-light">เพิ่ม/แก้ไขดีลพิเศษและแถบเลื่อนหน้าแรก</p>
           </div>
         </Link>
 
@@ -255,12 +300,25 @@ export function AdminDashboard() {
           to="/admin/pages"
           className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm hover:border-black transition-all flex items-center gap-3.5 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors shrink-0">
             <FileText size={20} />
           </div>
           <div>
             <h4 className="text-sm font-bold text-black">จัดการเนื้อหา & SEO</h4>
-            <p className="text-xs text-zinc-500">แก้ไข Hero, จุดเด่น และ Meta Tags</p>
+            <p className="text-xs text-zinc-500 mt-0.5 font-light">แก้ไข Hero, จุดเด่น และ Meta Tags</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/admin/settings"
+          className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm hover:border-black transition-all flex items-center gap-3.5 group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors shrink-0">
+            <Settings size={20} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-black">ตั้งค่าเว็บไซต์</h4>
+            <p className="text-xs text-zinc-500 mt-0.5 font-light">แก้ไขข้อมูลติดต่อ แผนที่ และ Social</p>
           </div>
         </Link>
 
@@ -269,12 +327,12 @@ export function AdminDashboard() {
           target="_blank"
           className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm hover:border-black transition-all flex items-center gap-3.5 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors shrink-0">
             <ExternalLink size={20} />
           </div>
           <div>
             <h4 className="text-sm font-bold text-black">เปิดดูเว็บไซต์จริง</h4>
-            <p className="text-xs text-zinc-500">ตรวจสอบการแสดงผลหน้าบ้าน</p>
+            <p className="text-xs text-zinc-500 mt-0.5 font-light">ตรวจสอบการแสดงผลหน้าบ้าน</p>
           </div>
         </Link>
       </div>

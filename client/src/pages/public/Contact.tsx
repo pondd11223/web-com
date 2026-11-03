@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   MapPin,
   Phone,
@@ -9,11 +10,14 @@ import {
   AlertCircle,
   Sparkles,
   Cpu,
+  X,
+  Tag,
+  Check,
 } from "lucide-react";
 import { api } from "../../api";
 import { SEOHead } from "../../components/common/SEOHead";
 import { LoadingSpinner } from "../../components/common/LoadingSkeleton";
-import type { WebsiteSettings, PageContent, ContactFormData } from "../../types";
+import type { WebsiteSettings, PageContent, ContactFormData, SelectedProductInfo } from "../../types";
 
 export function Contact() {
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);
@@ -22,6 +26,11 @@ export function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Selected Product from Navigation
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [selectedProduct, setSelectedProduct] = useState<SelectedProductInfo | null>(null);
 
   // Form State
   const [form, setForm] = useState<ContactFormData>({
@@ -33,6 +42,68 @@ export function Contact() {
   });
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // 1. Check location state
+    if (location.state && (location.state as any).selectedProduct) {
+      const prod = (location.state as any).selectedProduct as SelectedProductInfo;
+      setSelectedProduct(prod);
+      setForm((prev) => ({
+        ...prev,
+        subject: prev.subject || `ปรึกษาจัดสเปก: ${prod.name}`,
+        message:
+          prev.message ||
+          `สวัสดีครับ สนใจสั่งซื้อ / ปรึกษาสเปก ${prod.name} ${prod.price ? `(ราคา ${prod.price})` : ""} อยากสอบถามรายละเอียดเพิ่มเติมครับ`,
+      }));
+      return;
+    }
+
+    // 2. Check query param ?serviceId=...
+    const serviceId = searchParams.get("serviceId");
+    if (serviceId) {
+      api.getServices().then((res) => {
+        if (res.success && res.data) {
+          const match = res.data.find((s) => s.id === parseInt(serviceId, 10));
+          if (match) {
+            const prod: SelectedProductInfo = {
+              id: match.id,
+              name: match.name,
+              price: `฿${Number(match.price).toLocaleString("th-TH")}`,
+              imageUrl: match.imageUrl,
+              categoryName: match.categoryName,
+              description: match.description,
+            };
+            setSelectedProduct(prod);
+            setForm((prev) => ({
+              ...prev,
+              subject: prev.subject || `ปรึกษาจัดสเปก: ${prod.name}`,
+              message:
+                prev.message ||
+                `สวัสดีครับ สนใจสั่งซื้อ / ปรึกษาสเปก ${prod.name} (ราคา ${prod.price}) อยากสอบถามรายละเอียดเพิ่มเติมครับ`,
+            }));
+          }
+        }
+      });
+      return;
+    }
+
+    // 3. Check query param ?product=...
+    const productName = searchParams.get("product");
+    if (productName) {
+      const prod: SelectedProductInfo = {
+        name: productName,
+        price: "",
+      };
+      setSelectedProduct(prod);
+      setForm((prev) => ({
+        ...prev,
+        subject: prev.subject || `ปรึกษาจัดสเปก: ${prod.name}`,
+        message:
+          prev.message ||
+          `สวัสดีครับ สนใจโปรโมชั่น / ปรึกษาสเปก ${prod.name} อยากสอบถามรายละเอียดเพิ่มเติมครับ`,
+      }));
+    }
+  }, [location.state, searchParams]);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,8 +134,9 @@ export function Contact() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       errors.name = "กรุณากรอกชื่อ-นามสกุล (อย่างน้อย 2 ตัวอักษร)";
     }
-    if (!form.phone.trim() || form.phone.trim().length < 9) {
-      errors.phone = "กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง (อย่างน้อย 9 หลัก)";
+    // Strictly require 10 digits starting with 0
+    if (!form.phone.trim() || !/^0[0-9]{9}$/.test(form.phone.trim())) {
+      errors.phone = "เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 0 เท่านั้น (เช่น 0812345678)";
     }
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       errors.email = "รูปแบบอีเมลไม่ถูกต้อง";
@@ -78,10 +150,45 @@ export function Contact() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    if (name === "phone") {
+      // Allow only numbers
+      let cleaned = value.replace(/\D/g, "");
+
+      // If user starts typing, the first digit MUST be '0'
+      if (cleaned.length > 0 && cleaned[0] !== "0") {
+        setFieldErrors((prev) => ({
+          ...prev,
+          phone: "เบอร์โทรศัพท์ต้องเริ่มต้นด้วยเลข 0 เท่านั้น (ตัวเลข 10 หลัก)",
+        }));
+        return;
+      }
+
+      // Limit to max 10 digits
+      cleaned = cleaned.slice(0, 10);
+      setForm((prev) => ({ ...prev, phone: cleaned }));
+
+      if (cleaned.length === 10) {
+        setFieldErrors((prev) => ({ ...prev, phone: "" }));
+      } else if (cleaned.length > 0) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          phone: `เบอร์โทรศัพท์ต้องมี 10 หลัก (ขณะนี้กรอกแล้ว ${cleaned.length}/10 หลัก)`,
+        }));
+      } else {
+        setFieldErrors((prev) => ({ ...prev, phone: "" }));
+      }
+      return;
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }));
     if (fieldErrors[name]) {
       setFieldErrors((prev) => ({ ...prev, [name]: "" }));
     }
+  };
+
+  const handleClearSelectedProduct = () => {
+    setSelectedProduct(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,6 +291,70 @@ export function Contact() {
               </div>
             )}
 
+            {/* Selected Product Card */}
+            {selectedProduct && (
+              <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-zinc-50 border-2 border-black flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
+                <div className="flex items-center gap-4">
+                  {selectedProduct.imageUrl ? (
+                    <img
+                      src={selectedProduct.imageUrl}
+                      alt={selectedProduct.name}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-zinc-200 shrink-0"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
+                      <Cpu size={28} />
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-black text-white">
+                        {selectedProduct.badge || "สินค้าที่คุณเลือกปรึกษา"}
+                      </span>
+                      {selectedProduct.categoryName && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-800">
+                          {selectedProduct.categoryName}
+                        </span>
+                      )}
+                      {selectedProduct.tag && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                          {selectedProduct.tag}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-sm sm:text-base font-extrabold text-black">
+                      {selectedProduct.name}
+                    </h4>
+                    {selectedProduct.description && (
+                      <p className="text-xs text-zinc-500 line-clamp-1 max-w-md font-light mt-0.5">
+                        {selectedProduct.description}
+                      </p>
+                    )}
+                    {selectedProduct.price && (
+                      <p className="text-sm font-black text-black mt-1">
+                        {typeof selectedProduct.price === "number"
+                          ? `฿${selectedProduct.price.toLocaleString("th-TH")}`
+                          : selectedProduct.price}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClearSelectedProduct}
+                  className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-red-600 font-semibold cursor-pointer shrink-0 py-1.5 px-3 rounded-xl border border-zinc-200 hover:border-red-300 hover:bg-red-50 transition-colors"
+                  title="ยกเลิกการเลือกสินค้านี้"
+                >
+                  <X size={14} />
+                  <span>ยกเลิก / ปรึกษาทั่วไป</span>
+                </button>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* Name */}
@@ -212,23 +383,29 @@ export function Contact() {
                 {/* Phone */}
                 <div>
                   <label htmlFor="phone" className="block text-xs font-semibold text-zinc-700 mb-1.5">
-                    เบอร์โทรศัพท์ <span className="text-red-500">*</span>
+                    เบอร์โทรศัพท์ (10 หลักขึ้นต้นด้วย 0) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
                     id="phone"
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="เช่น 081-234-5678"
-                    className={`w-full px-4 py-3 rounded-xl border text-sm text-black bg-zinc-50 outline-none transition-all ${
+                    placeholder="0812345678"
+                    className={`w-full px-4 py-3 rounded-xl border text-sm text-black bg-zinc-50 outline-none transition-all font-mono tracking-wider ${
                       fieldErrors.phone
                         ? "border-red-500 focus:ring-1 focus:ring-red-500/30"
                         : "border-zinc-300 focus:border-black focus:ring-1 focus:ring-black/20"
                     }`}
                   />
-                  {fieldErrors.phone && (
-                    <p className="text-xs text-red-500 mt-1">{fieldErrors.phone}</p>
+                  {fieldErrors.phone ? (
+                    <p className="text-xs text-red-500 mt-1 font-sans">{fieldErrors.phone}</p>
+                  ) : (
+                    <p className="text-[11px] text-zinc-400 mt-1 font-sans">
+                      * บังคับเฉพาะตัวเลข 10 หลัก และขึ้นต้นด้วย 0 (ปัจจุบัน {form.phone.length}/10 หลัก)
+                    </p>
                   )}
                 </div>
               </div>

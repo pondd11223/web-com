@@ -11,6 +11,7 @@ import {
   X,
   ShieldCheck,
   Cpu,
+  Flame,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { api } from "../../api";
@@ -52,6 +53,7 @@ export function AdminLayout() {
   const navItems = [
     { to: "/admin", label: "Dashboard (ภาพรวม)", icon: LayoutDashboard, end: true },
     { to: "/admin/services", label: "จัดการสินค้า/บริการ (PC & Gear)", icon: Cpu },
+    { to: "/admin/promotions", label: "จัดการโปรโมชั่น (Promotions)", icon: Flame },
     { to: "/admin/pages", label: "จัดการเนื้อหา & SEO", icon: FileText },
     { to: "/admin/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings },
     { to: "/admin/messages", label: "ข้อความติดต่อ", icon: Mail, badge: unreadCount },

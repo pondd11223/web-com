@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 import { eq, desc, asc, ilike, and, sql, count } from "drizzle-orm";
 import { db } from "../db";
-import { settings, pageContents, services, categories, messages, admins } from "../db/schema";
+import { settings, pageContents, services, categories, messages, admins, promotions } from "../db/schema";
 import { authGuard, type AdminPayload } from "../middleware/auth";
 import {
   settingsSchema,
   pageContentSchema,
   serviceSchema,
   categorySchema,
+  promotionSchema,
 } from "../validators";
 
 const adminRouter = new Hono<{ Variables: { admin: AdminPayload } }>();
@@ -450,6 +451,99 @@ adminRouter.put("/change-password", async (c) => {
   await db.update(admins).set({ password: hashedPassword }).where(eq(admins.id, adminPayload.id));
 
   return c.json({ success: true, message: "เปลี่ยนรหัสผ่านแอดมินสำเร็จแล้ว กรุณาใช้รหัสผ่านใหม่ในการเข้าสู่ระบบครั้งถัดไป" });
+});
+
+// -------------------------------------------------------------
+// PROMOTIONS (/admin/promotions)
+// -------------------------------------------------------------
+adminRouter.get("/promotions", async (c) => {
+  const data = await db.select().from(promotions).orderBy(asc(promotions.sortOrder), asc(promotions.id));
+  return c.json({ success: true, data });
+});
+
+adminRouter.get("/promotions/:id", async (c) => {
+  const id = parseInt(c.req.param("id"), 10);
+  const [item] = await db.select().from(promotions).where(eq(promotions.id, id)).limit(1);
+  if (!item) {
+    return c.json({ success: false, message: "ไม่พบข้อมูลโปรโมชั่น" }, 404);
+  }
+  return c.json({ success: true, data: item });
+});
+
+adminRouter.post("/promotions", async (c) => {
+  const body = await c.req.json();
+  const parsed = promotionSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      {
+        success: false,
+        message: "ข้อมูลโปรโมชั่นไม่ถูกต้อง",
+        errors: parsed.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+      },
+      400
+    );
+  }
+
+  const [newItem] = await db
+    .insert(promotions)
+    .values({
+      ...parsed.data,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  return c.json({ success: true, message: "เพิ่มโปรโมชั่นใหม่สำเร็จ", data: newItem }, 201);
+});
+
+adminRouter.put("/promotions/:id", async (c) => {
+  const id = parseInt(c.req.param("id"), 10);
+  const body = await c.req.json();
+  const parsed = promotionSchema.partial().safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      {
+        success: false,
+        message: "ข้อมูลโปรโมชั่นไม่ถูกต้อง",
+        errors: parsed.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+      },
+      400
+    );
+  }
+
+  const [updated] = await db
+    .update(promotions)
+    .set({
+      ...parsed.data,
+      updatedAt: new Date(),
+    })
+    .where(eq(promotions.id, id))
+    .returning();
+
+  if (!updated) {
+    return c.json({ success: false, message: "ไม่พบโปรโมชั่นที่ต้องการแก้ไข" }, 404);
+  }
+
+  return c.json({ success: true, message: "อัปเดตโปรโมชั่นเรียบร้อยแล้ว", data: updated });
+});
+
+adminRouter.delete("/promotions/:id", async (c) => {
+  const id = parseInt(c.req.param("id"), 10);
+  const [deleted] = await db.delete(promotions).where(eq(promotions.id, id)).returning();
+
+  if (!deleted) {
+    return c.json({ success: false, message: "ไม่พบโปรโมชั่นที่ต้องการลบ" }, 404);
+  }
+
+  return c.json({ success: true, message: "ลบโปรโมชั่นเรียบร้อยแล้ว" });
 });
 
 export default adminRouter;

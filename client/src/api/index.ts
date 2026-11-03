@@ -4,6 +4,7 @@ import type {
   PageContent,
   Category,
   Service,
+  PromotionItem,
   ContactFormData,
   ContactMessage,
   DashboardStats,
@@ -160,6 +161,105 @@ const defaultServices: Service[] = [
   },
 ];
 
+export const defaultPromotions: PromotionItem[] = [
+  {
+    id: 1,
+    title: "NEXUS CyberBeast RTX 4090",
+    specs: "i9-14900KS • RTX 4090 • 64GB DDR5 • Custom Loop Water",
+    tag: "ลด ฿20,000",
+    price: "฿139,000",
+    originalPrice: "฿159,000",
+    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80",
+    badge: "🔥 สเปกเรือธง",
+    sortOrder: 1,
+    isActive: true,
+  },
+  {
+    id: 2,
+    title: "PRO-STUDIO Workstation 8K",
+    specs: "Threadripper 7960X • RTX 4080 Super • 128GB ECC",
+    tag: "ลด ฿15,000",
+    price: "฿115,000",
+    originalPrice: "฿130,000",
+    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&auto=format&fit=crop&q=80",
+    badge: "⚡ สำหรับครีเอเตอร์",
+    sortOrder: 2,
+    isActive: true,
+  },
+  {
+    id: 3,
+    title: "ULTRA-VIEW 34\" Curved QD-OLED",
+    specs: "34 นิ้ว 175Hz • 0.03ms • WQHD 21:9 • HDR True Black",
+    tag: "ลด ฿5,000",
+    price: "฿29,900",
+    originalPrice: "฿34,900",
+    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&auto=format&fit=crop&q=80",
+    badge: "⭐ จอระดับโปร",
+    sortOrder: 3,
+    isActive: true,
+  },
+  {
+    id: 4,
+    title: "NEXUS Apex Pro Wireless Keyboard",
+    specs: "Full CNC Aluminum • Custom Linear Switches • Hot-Swap",
+    tag: "ลด ฿1,000",
+    price: "฿4,890",
+    originalPrice: "฿5,890",
+    image: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&auto=format&fit=crop&q=80",
+    badge: "🎁 ยอดนิยม",
+    sortOrder: 4,
+    isActive: true,
+  },
+  {
+    id: 5,
+    title: "NEXUS Vortex Air i7 + RTX 4070 Ti",
+    specs: "i7-14700KF • RTX 4070 Ti Super • AIO 360mm • 32GB",
+    tag: "ลด ฿7,000",
+    price: "฿64,900",
+    originalPrice: "฿71,900",
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80",
+    badge: "💥 คุ้มค่าที่สุด",
+    sortOrder: 5,
+    isActive: true,
+  },
+  {
+    id: 6,
+    title: "NEXUS Ghost White Mini-ITX",
+    specs: "Ryzen 7 7800X3D • RTX 4070 Super White • 32GB DDR5",
+    tag: "ลด ฿6,000",
+    price: "฿52,900",
+    originalPrice: "฿58,900",
+    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
+    badge: "🤍 มินิมอลขาวล้วน",
+    sortOrder: 6,
+    isActive: true,
+  },
+  {
+    id: 7,
+    title: "AERO-LIGHT Wireless Mouse 49g",
+    specs: "PAW3395 26K DPI • 4K Polling Rate • Optical Switch",
+    tag: "ลด ฿800",
+    price: "฿2,990",
+    originalPrice: "฿3,790",
+    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80",
+    badge: "🎯 แม่นยำสูง",
+    sortOrder: 7,
+    isActive: true,
+  },
+  {
+    id: 8,
+    title: "GEN5 HyperSpeed NVMe SSD 2TB",
+    specs: "สปีดอ่าน 12,400 MB/s • เขียน 11,800 MB/s • PCIe 5.0",
+    tag: "ลด ฿1,200",
+    price: "฿7,890",
+    originalPrice: "฿9,090",
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600&auto=format&fit=crop&q=80",
+    badge: "🚀 เร็วที่สุด",
+    sortOrder: 8,
+    isActive: true,
+  },
+];
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
   const headers: Record<string, string> = {
@@ -216,6 +316,61 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
       return { success: true, message: "ส่งข้อความสำเร็จ ทีมงานวิศวกรจะติดต่อกลับโดยเร็วที่สุด", data: { id: Date.now() } as unknown as T };
     }
 
+    // Fallback for promotions
+    if (endpoint === "/public/promotions" || (endpoint === "/admin/promotions" && (!options.method || options.method === "GET"))) {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
+      const list = stored ? JSON.parse(stored) : defaultPromotions;
+      return { success: true, data: list as unknown as T };
+    }
+    if (endpoint === "/admin/promotions" && options.method === "POST") {
+      const payload = JSON.parse((options.body as string) || "{}");
+      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
+      const list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
+      const newItem: PromotionItem = {
+        ...payload,
+        id: Date.now(),
+        isActive: payload.isActive ?? true,
+        sortOrder: payload.sortOrder ?? list.length + 1,
+      };
+      list.push(newItem);
+      if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
+      return { success: true, message: "เพิ่มโปรโมชั่นใหม่สำเร็จ", data: newItem as unknown as T };
+    }
+    if (endpoint.startsWith("/admin/promotions/") && options.method === "PUT") {
+      const id = parseInt(endpoint.split("/").pop() || "0", 10);
+      const payload = JSON.parse((options.body as string) || "{}");
+      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
+      const list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
+      const index = list.findIndex((item) => item.id === id);
+      if (index >= 0) {
+        list[index] = { ...list[index], ...payload };
+        if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
+        return { success: true, message: "แก้ไขโปรโมชั่นสำเร็จ", data: list[index] as unknown as T };
+      }
+    }
+    if (endpoint.startsWith("/admin/promotions/") && options.method === "DELETE") {
+      const id = parseInt(endpoint.split("/").pop() || "0", 10);
+      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
+      let list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
+      list = list.filter((item) => item.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
+      return { success: true, message: "ลบโปรโมชั่นสำเร็จ", data: {} as unknown as T };
+    }
+
+    // Fallback for pages
+    if (endpoint === "/admin/pages") {
+      const pages = [defaultHomePage, defaultAboutPage, defaultContactPage];
+      return { success: true, data: pages as unknown as T };
+    }
+    if (endpoint.startsWith("/admin/pages/") && options.method === "PUT") {
+      const key = endpoint.split("/").pop();
+      const payload = JSON.parse((options.body as string) || "{}");
+      if (key === "home") Object.assign(defaultHomePage, payload);
+      if (key === "about") Object.assign(defaultAboutPage, payload);
+      if (key === "contact") Object.assign(defaultContactPage, payload);
+      return { success: true, message: "บันทึกเนื้อหาหน้าเรียบร้อยแล้ว", data: payload as unknown as T };
+    }
+
     return {
       success: false,
       message: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง",
@@ -231,6 +386,7 @@ export const api = {
   getSettings: () => request<WebsiteSettings>("/public/settings"),
   getPageContent: (key: string) => request<PageContent>(`/public/pages/${key}`),
   getCategories: () => request<Category[]>("/public/categories"),
+  getPromotions: () => request<PromotionItem[]>("/public/promotions"),
   getServices: (categoryId?: number) =>
     request<Service[]>(`/public/services${categoryId ? `?categoryId=${categoryId}` : ""}`),
   getFeaturedServices: () => request<Service[]>("/public/featured-services"),
@@ -327,6 +483,23 @@ export const api = {
   getAdminMessage: (id: number) => request<ContactMessage>(`/admin/messages/${id}`),
   deleteAdminMessage: (id: number) =>
     request(`/admin/messages/${id}`, {
+      method: "DELETE",
+    }),
+
+  // Admin Promotions
+  getAdminPromotions: () => request<PromotionItem[]>("/admin/promotions"),
+  createAdminPromotion: (data: Partial<PromotionItem>) =>
+    request<PromotionItem>("/admin/promotions", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateAdminPromotion: (id: number, data: Partial<PromotionItem>) =>
+    request<PromotionItem>(`/admin/promotions/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  deleteAdminPromotion: (id: number) =>
+    request(`/admin/promotions/${id}`, {
       method: "DELETE",
     }),
 

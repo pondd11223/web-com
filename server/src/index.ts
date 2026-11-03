@@ -17,8 +17,14 @@ app.use(
   "*",
   cors({
     origin: (origin) => {
-      // Allow localhost and local dev ports
-      if (!origin || origin.includes("localhost") || origin.includes("127.0.0.1") || origin === clientUrl) {
+      // Allow localhost, local dev ports, and Vercel deployment domains
+      if (
+        !origin ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1") ||
+        origin === clientUrl ||
+        origin.endsWith(".vercel.app")
+      ) {
         return origin || clientUrl;
       }
       return clientUrl;
@@ -55,7 +61,6 @@ app.notFound((c) => {
 const PORT = parseInt(process.env.PORT || "5000", 10);
 console.log(`🚀 Server starting on http://localhost:${PORT}`);
 
-export default {
-  port: PORT,
-  fetch: app.fetch,
-};
+(app as any).port = PORT;
+
+export default app;

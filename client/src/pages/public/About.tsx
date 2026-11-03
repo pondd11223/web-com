@@ -278,8 +278,18 @@ export function About() {
                     </div>
 
                     <Link
-                      to="/contact"
-                      className="px-3.5 py-1.5 rounded-xl bg-black hover:bg-zinc-800 text-xs font-bold text-white transition-all shadow-sm hover:scale-105 active:scale-95"
+                      to={`/contact?serviceId=${item.id}`}
+                      state={{
+                        selectedProduct: {
+                          id: item.id,
+                          name: item.name,
+                          price: `฿${Number(item.price).toLocaleString("th-TH")}`,
+                          imageUrl: item.imageUrl,
+                          categoryName: item.categoryName,
+                          description: item.description,
+                        },
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-black hover:bg-zinc-800 text-xs font-bold text-white transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       สั่งจอง / ปรึกษา
                     </Link>

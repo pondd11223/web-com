@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { db } from "../db";
-import { settings, pageContents, services, categories, messages } from "../db/schema";
+import { settings, pageContents, services, categories, messages, promotions } from "../db/schema";
 import { contactFormSchema } from "../validators";
 
 const publicRouter = new Hono();
@@ -45,6 +45,16 @@ publicRouter.get("/pages/:key", async (c) => {
 // GET /api/public/categories
 publicRouter.get("/categories", async (c) => {
   const data = await db.select().from(categories).orderBy(asc(categories.sortOrder), asc(categories.name));
+  return c.json({ success: true, data });
+});
+
+// GET /api/public/promotions
+publicRouter.get("/promotions", async (c) => {
+  const data = await db
+    .select()
+    .from(promotions)
+    .where(eq(promotions.isActive, true))
+    .orderBy(asc(promotions.sortOrder), asc(promotions.id));
   return c.json({ success: true, data });
 });
 

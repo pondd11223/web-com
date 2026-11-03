@@ -78,6 +78,21 @@ export const pageContents = pgTable("page_contents", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const promotions = pgTable("promotions", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  specs: text("specs").notNull(),
+  tag: varchar("tag", { length: 100 }).notNull(),
+  price: varchar("price", { length: 50 }).notNull(),
+  originalPrice: varchar("original_price", { length: 50 }),
+  image: text("image").notNull(),
+  badge: varchar("badge", { length: 100 }).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const categoriesRelations = relations(categories, ({ many }) => ({
   services: many(services),
 }));

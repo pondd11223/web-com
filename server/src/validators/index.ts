@@ -10,12 +10,26 @@ export type LoginInput = z.infer<typeof loginSchema>;
 // Contact Form
 export const contactFormSchema = z.object({
   name: z.string().min(2, "กรุณาระบุชื่อ-นามสกุล (อย่างน้อย 2 ตัวอักษร)"),
-  phone: z.string().min(9, "กรุณาระบุเบอร์โทรศัพท์ที่ถูกต้อง (อย่างน้อย 9 หลัก)"),
+  phone: z.string().regex(/^0[0-9]{9}$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลักและขึ้นต้นด้วย 0"),
   email: z.string().email("รูปแบบอีเมลไม่ถูกต้อง").optional().or(z.literal("")),
   subject: z.string().max(200, "หัวข้อต้องไม่เกิน 200 ตัวอักษร").optional().or(z.literal("")),
   message: z.string().min(5, "กรุณาระบุข้อความอย่างน้อย 5 ตัวอักษร"),
 });
 export type ContactFormInput = z.infer<typeof contactFormSchema>;
+
+// Promotion
+export const promotionSchema = z.object({
+  title: z.string().min(1, "กรุณาระบุชื่อโปรโมชั่น"),
+  specs: z.string().min(1, "กรุณาระบุรายละเอียดหรือสเปก"),
+  tag: z.string().min(1, "กรุณาระบุแท็กส่วนลด เช่น ลด ฿20,000"),
+  price: z.string().min(1, "กรุณาระบุราคาโปรโมชั่น"),
+  originalPrice: z.string().optional().nullable(),
+  image: z.string().url("กรุณาระบุ URL รูปภาพที่ถูกต้อง"),
+  badge: z.string().default("🔥 โปรโมชั่นพิเศษ"),
+  sortOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+export type PromotionInput = z.infer<typeof promotionSchema>;
 
 // Category
 export const categorySchema = z.object({

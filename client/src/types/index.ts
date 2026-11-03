@@ -30,6 +30,32 @@ export interface Service {
   updatedAt?: string;
 }
 
+export interface PromotionItem {
+  id: number;
+  title: string;
+  specs: string;
+  tag: string;
+  price: string;
+  originalPrice?: string | null;
+  image: string;
+  badge: string;
+  sortOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SelectedProductInfo {
+  id?: number | string;
+  name: string;
+  price: string | number;
+  imageUrl?: string;
+  categoryName?: string;
+  description?: string;
+  tag?: string;
+  badge?: string;
+}
+
 export interface WebsiteSettings {
   id?: number;
   storeName: string;

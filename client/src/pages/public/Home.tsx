@@ -21,7 +21,7 @@ import {
 import { api } from "../../api";
 import { SEOHead } from "../../components/common/SEOHead";
 import { LoadingSpinner, ErrorState } from "../../components/common/LoadingSkeleton";
-import type { PageContent, Service } from "../../types";
+import type { PageContent, Service, PromotionItem } from "../../types";
 
 // Computer Icon mapping helper (White Background + Black Text)
 function renderHighlightIcon(iconName: string) {
@@ -126,6 +126,7 @@ const promoAds = [
 export function Home() {
   const [content, setContent] = useState<PageContent | null>(null);
   const [featuredServices, setFeaturedServices] = useState<Service[]>([]);
+  const [promotions, setPromotions] = useState<PromotionItem[]>(promoAds as PromotionItem[]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -137,9 +138,10 @@ export function Home() {
     setLoading(true);
     setError(null);
     try {
-      const [pageRes, servicesRes] = await Promise.all([
+      const [pageRes, servicesRes, promoRes] = await Promise.all([
         api.getPageContent("home"),
         api.getFeaturedServices(),
+        api.getPromotions(),
       ]);
 
       if (pageRes.success && pageRes.data) {
@@ -147,6 +149,9 @@ export function Home() {
       }
       if (servicesRes.success && servicesRes.data) {
         setFeaturedServices(servicesRes.data);
+      }
+      if (promoRes.success && promoRes.data && promoRes.data.length > 0) {
+        setPromotions(promoRes.data);
       }
     } catch (err: any) {
       setError("ไม่สามารถโหลดข้อมูลหน้าแรกได้ในขณะนี้");
@@ -223,16 +228,23 @@ export function Home() {
       {/* 1. HERO SECTION (WHITE BACKGROUND + BOLD BLACK TYPOGRAPHY)     */}
       {/* ============================================================== */}
       <section className="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-zinc-200 bg-gradient-to-b from-zinc-50 via-white to-white overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center space-y-6">
+        {content.heroImageUrl && (
+          <div className="absolute inset-0 z-0 opacity-15 pointer-events-none">
+            <img src={content.heroImageUrl} alt="" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white" />
+          </div>
+        )}
+
+        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-6">
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white text-xs sm:text-sm font-semibold tracking-wide shadow-md">
             <Sparkles size={14} className="text-white" />
             <span>High-Performance Custom PC & Gaming Gear Store</span>
           </div>
 
-          {/* Requested Main Headline */}
+          {/* Requested Main Headline (from Admin content or default) */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-tight text-black">
-            {heroHeadline}
+            {content.heroTitle || heroHeadline}
           </h1>
 
           {/* Subtitle */}
@@ -302,10 +314,10 @@ export function Home() {
 
           {/* Marquee Track Moving Right */}
           <div className="animate-scroll-right flex items-stretch gap-5">
-            {[...promoAds, ...promoAds].map((item, idx) => (
+            {[...promotions, ...promotions].map((item, idx) => (
               <div
                 key={`${item.id}-${idx}`}
-                className="w-80 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+                className="w-80 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 {/* Product Image */}
                 <div className="relative h-44 rounded-xl overflow-hidden bg-zinc-100 mb-3">
@@ -313,6 +325,10 @@ export function Home() {
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
+                    }}
                   />
                   <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-black text-white shadow-sm">
                     {item.badge}
@@ -335,17 +351,29 @@ export function Home() {
                 {/* Price & Action */}
                 <div className="pt-3 mt-2 border-t border-zinc-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-zinc-400 line-through block font-medium">
-                      {item.originalPrice}
-                    </span>
+                    {item.originalPrice && (
+                      <span className="text-[10px] text-zinc-400 line-through block font-medium">
+                        {item.originalPrice}
+                      </span>
+                    )}
                     <span className="text-base font-black text-black">
                       {item.price}
                     </span>
                   </div>
 
                   <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm"
+                    to={`/contact?product=${encodeURIComponent(item.title)}`}
+                    state={{
+                      selectedProduct: {
+                        name: item.title,
+                        price: item.price,
+                        imageUrl: item.image,
+                        tag: item.tag,
+                        badge: item.badge,
+                        description: item.specs,
+                      },
+                    }}
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
                   >
                     <span>สั่งจองโปรนี้</span>
                     <ArrowRight size={13} />
@@ -448,7 +476,7 @@ export function Home() {
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between gap-2">
                   <div className="flex flex-col">
                     <span className="text-[10px] text-zinc-400 uppercase font-semibold">ราคาเริ่มต้น</span>
                     <span className="text-xl font-black text-black">
@@ -456,12 +484,24 @@ export function Home() {
                     </span>
                   </div>
 
-                  <Link
-                    to="/about"
-                    className="px-4 py-2 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-bold transition-all shadow-sm hover:scale-105 active:scale-95"
-                  >
-                    ดูรายละเอียด
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/contact?serviceId=${service.id}`}
+                      state={{
+                        selectedProduct: {
+                          id: service.id,
+                          name: service.name,
+                          price: `฿${Number(service.price).toLocaleString("th-TH")}`,
+                          imageUrl: service.imageUrl,
+                          categoryName: service.categoryName,
+                          description: service.description,
+                        },
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-bold transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                    >
+                      ปรึกษาสเปกนี้
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -645,11 +685,21 @@ export function Home() {
               {/* Action Buttons */}
               <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                 <Link
-                  to="/contact"
+                  to={`/contact?product=${encodeURIComponent("NEXUS TITAN MONOLITH EDITION")}`}
+                  state={{
+                    selectedProduct: {
+                      name: "NEXUS TITAN MONOLITH EDITION",
+                      price: "฿149,000",
+                      imageUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1000&auto=format&fit=crop&q=80",
+                      tag: "ลด ฿20,000",
+                      badge: "🔥 HOT PROMOTION",
+                      description: "i9-14900KS • RTX 4090 24GB • 64GB DDR5 6000MHz • 2TB Gen4 NVMe • Custom Loop Water",
+                    },
+                  }}
                   onClick={handleCloseAd}
                   className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-black hover:bg-zinc-800 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all"
                 >
-                  <span>รับสิทธิ์โปรโมชัน / ติดต่อสั่งซื้อทันที</span>
+                  <span>รับสิทธิ์โปรโมชัน / ปรึกษาสั่งซื้อทันที</span>
                   <ArrowRight size={16} />
                 </Link>
 

@@ -15,6 +15,7 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminSettings } from "./pages/admin/AdminSettings";
 import { AdminPages } from "./pages/admin/AdminPages";
 import { AdminServices } from "./pages/admin/AdminServices";
+import { AdminPromotions } from "./pages/admin/AdminPromotions";
 import { AdminMessages } from "./pages/admin/AdminMessages";
 
 export function App() {
@@ -41,6 +42,7 @@ export function App() {
               <Route path="settings" element={<AdminSettings />} />
               <Route path="pages" element={<AdminPages />} />
               <Route path="services" element={<AdminServices />} />
+              <Route path="promotions" element={<AdminPromotions />} />
               <Route path="messages" element={<AdminMessages />} />
             </Route>
           </Route>
