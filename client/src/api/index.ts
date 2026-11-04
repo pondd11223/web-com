@@ -12,269 +12,17 @@ import type {
 } from "../types";
 
 const API_BASE = "/api";
-const TOKEN_KEY = "nexus_admin_token";
-
-// Default Fallback Data (Computer Store - Luxury Black & White Edition)
-const defaultSettings: WebsiteSettings = {
-  storeName: "NEXUS Custom PC & Gaming Gear",
-  tagline: "High-Performance Custom PC, Workstations & Gaming Peripherals",
-  logoUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=150&auto=format&fit=crop&q=80",
-  phone: "02-888-9999",
-  email: "contact@nexuspc.co.th",
-  address: "101/5 อาคารไอทีคอมเพล็กซ์ ชั้น 3 ถ.พระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพฯ 10310",
-  businessHours: "จันทร์ - เสาร์: 10:00 - 20:00 น.",
-  lineId: "@nexuspc",
-  lineUrl: "https://line.me/R/ti/p/@nexuspc",
-  facebookUrl: "https://facebook.com/nexuspc.th",
-  instagramUrl: "https://instagram.com/nexuspc.th",
-  googleMapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.540871181816!2d100.5639693!3d13.7578135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29e84b8d7eb8f%3A0x6b7724a44b82967!2sFortune%20Town!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth",
-};
-
-const defaultHomePage: PageContent = {
-  id: 1,
-  pageKey: "home",
-  heroTitle: "รวมคอมพิวเตอร์และอุปกรณ์เกมมิ่งสเปกแรง คุ้มค่า มั่นใจในคุณภาพ",
-  heroSubtitle: "ผู้นำด้านการจัดสเปกคอมพิวเตอร์ประกอบระดับพรีเมียม เวิร์กสเตชันสำหรับครีเอเตอร์ และระบบระบายความร้อนด้วยน้ำ Custom สั่งประกอบตามงบประมาณ ประกันศูนย์ไทย 100%",
-  heroImageUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1600&auto=format&fit=crop&q=80",
-  heroCtaText: "ปรึกษาจัดสเปกคอม / ส่งข้อความ",
-  highlights: [
-    {
-      icon: "Cpu",
-      title: "Tailored Custom Specs",
-      description: "จัดสเปกตรงความต้องการและงบประมาณ ไม่ยัดไส้อุปกรณ์ เลือกชิ้นส่วนเกรดท็อปเพื่อความคุ้มค่าสูงสุด",
-    },
-    {
-      icon: "Zap",
-      title: "Ultimate 4K / 8K Performance",
-      description: "รีดพลังประมวลผลสูงสุดด้วยการปรับแต่งไบออส XMP/EXPO และจัดทางลมให้เย็นจัดและเงียบสนิท",
-    },
-    {
-      icon: "ShieldCheck",
-      title: "100% Genuine Warranty",
-      description: "อุปกรณ์ทุกชิ้นเป็นของแท้ประกันศูนย์ไทยเต็มปี บริการเคลมและประสานงานด่วนไม่ต้องรอนาน",
-    },
-    {
-      icon: "Wrench",
-      title: "Master Cable Management",
-      description: "เก็บสายไฟและท่อระบบน้ำอย่างประณีตระดับงานแสดงโชว์ พร้อม Stress Test ก่อนส่งมอบ 24 ชม.",
-    },
-  ],
-  metaTitle: "NEXUS Custom PC & Gaming Gear | คอมพิวเตอร์ประกอบระดับไฮเอนด์",
-  metaDescription: "ผู้เชี่ยวชาญด้านคอมพิวเตอร์ประกอบระดับไฮเอนด์ เวิร์กสเตชันตัดต่อ 8K และเกมมิ่งเกียร์ สั่งประกอบตามงบประมาณ",
-};
-
-const defaultAboutPage: PageContent = {
-  id: 2,
-  pageKey: "about",
-  aboutStory: "NEXUS ก่อตั้งขึ้นโดยกลุ่มวิศวกรฮาร์ดแวร์และเกมเมอร์ผู้หลงใหลในประสิทธิภาพสูงสุดของคอมพิวเตอร์ เราเชื่อว่าคอมพิวเตอร์ประกอบไม่ได้เป็นเพียงกล่องสี่เหลี่ยมที่มีแผงวงจร แต่คือเครื่องมือขับเคลื่อนความฝัน ความคิดสร้างสรรค์ และชัยชนะในการแข่งขัน\n\nเราคัดสรรเฉพาะอุปกรณ์คุณภาพสูงจากแบรนด์ชั้นนำระดับโลก ไม่ว่าจะเป็น Intel, AMD, NVIDIA, ASUS, Corsair และ Lian Li ทุกเครื่องผ่านการประกอบด้วยความประณีต เก็บสายไฟอย่างสวยงาม และผ่านกระบวนการ Stress Test อย่างเข้มงวด เพื่อให้คุณมั่นใจได้ว่าคอมพิวเตอร์ทุกเครื่องจาก NEXUS จะทำงานได้อย่างเต็มประสิทธิภาพและมีอายุการใช้งานยาวนานที่สุด",
-  aboutImageUrl: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=1200&auto=format&fit=crop&q=80",
-  metaTitle: "เกี่ยวกับเรา & สินค้าคอมพิวเตอร์ทั้งหมด | NEXUS Custom PC",
-  metaDescription: "เรื่องราวความเป็นมา มาตรฐานความเชี่ยวชาญด้านฮาร์ดแวร์ และสินค้าคอมพิวเตอร์ประกอบทั้งหมดจาก NEXUS",
-};
-
-const defaultContactPage: PageContent = {
-  id: 3,
-  pageKey: "contact",
-  metaTitle: "ติดต่อเรา & ปรึกษาจัดสเปกคอม | NEXUS Custom PC",
-  metaDescription: "ติดต่อขอคำปรึกษาจัดสเปกคอมพิวเตอร์ เวิร์กสเตชัน หรือสั่งจองเกมมิ่งเกียร์กับทีมงาน NEXUS",
-};
-
-const defaultCategories: Category[] = [
-  { id: 1, name: "Custom Gaming PC", slug: "custom-gaming-pc", description: "คอมพิวเตอร์ประกอบสำหรับเล่นเกมระดับไฮเอนด์", sortOrder: 1 },
-  { id: 2, name: "Workstation & Creator PC", slug: "workstation-pc", description: "คอมพิวเตอร์สำหรับงานตัดต่อวิดีโอ 8K และ 3D", sortOrder: 2 },
-  { id: 3, name: "Gaming Gear & Peripherals", slug: "gaming-gear", description: "เกมมิ่งเกียร์ระดับโปรเพลเยอร์ จอภาพ และคีย์บอร์ด", sortOrder: 3 },
-  { id: 4, name: "PC Hardware & Upgrades", slug: "pc-hardware", description: "การ์ดจอ GPU, CPU และ SSD NVMe Gen5 แท้ศูนย์ไทย", sortOrder: 4 },
-];
-
-const defaultServices: Service[] = [
-  {
-    id: 1,
-    categoryId: 1,
-    categoryName: "Custom Gaming PC",
-    name: "NEXUS CyberBeast RTX 4090 Custom Watercooled PC",
-    description: "สเปกท็อปสุดแห่งยุค: Intel Core i9-14900KS + NVIDIA GeForce RTX 4090 24GB + RAM 64GB DDR5 6400MHz + ชุดน้ำเปิด Hard Tube Custom ลูปคู่ เคสกระจกพาโนรามา เล่นได้ทุกเกมระดับ 4K 144Hz ปรับสุด",
-    price: "139000.00",
-    imageUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
-    isFeatured: true,
-    isActive: true,
-    sortOrder: 1,
-  },
-  {
-    id: 2,
-    categoryId: 2,
-    categoryName: "Workstation & Creator PC",
-    name: "PRO-STUDIO Workstation Threadripper & RTX 4080 Super",
-    description: "ขุมพลังสำหรับสตูดิโอตัดต่อ 8K และงาน 3D VFX: AMD Ryzen Threadripper 7960X (24 Cores / 48 Threads) + 128GB DDR5 ECC RAM + RTX 4080 Super 16GB + 4TB Gen5 NVMe เสถียรภาพระดับ 24/7",
-    price: "115000.00",
-    imageUrl: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800&auto=format&fit=crop&q=80",
-    isFeatured: true,
-    isActive: true,
-    sortOrder: 2,
-  },
-  {
-    id: 3,
-    categoryId: 3,
-    categoryName: "Gaming Gear & Peripherals",
-    name: "NEXUS Apex Pro Wireless Custom Keyboard (Hot-Swap)",
-    description: "คีย์บอร์ดกลไกไร้สายบอดี้อะลูมิเนียม CNC ชุบอโนไดซ์ สวิตช์ Linear สั่งลูบพิเศษจากโรงงาน คีย์แคป PBT Double-shot ไฟ RGB Per-key รองรับ Tri-mode (Bluetooth / 2.4GHz / Type-C)",
-    price: "4890.00",
-    imageUrl: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80",
-    isFeatured: true,
-    isActive: true,
-    sortOrder: 3,
-  },
-  {
-    id: 4,
-    categoryId: 1,
-    categoryName: "Custom Gaming PC",
-    name: "NEXUS Vortex Air i7 + RTX 4070 Ti Super",
-    description: "เครื่องเกมมิ่งยอดนิยม คุ้มค่าที่สุด: Intel Core i7-14700KF + RTX 4070 Ti Super 16GB + 32GB DDR5 + ชุดน้ำปิด AIO 360mm พร้อมพัดลม ARGB ไหลเวียนอากาศเยี่ยม รองรับ 2K / 4K สบาย",
-    price: "64900.00",
-    imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
-    isFeatured: false,
-    isActive: true,
-    sortOrder: 4,
-  },
-  {
-    id: 5,
-    categoryId: 3,
-    categoryName: "Gaming Gear & Peripherals",
-    name: "ULTRA-VIEW 34\" Curved QD-OLED 175Hz Gaming Monitor",
-    description: "จอเกมมิ่งโค้งระดับพรีเมียม 34 นิ้ว สัดส่วน 21:9 WQHD พาเนล QD-OLED แท้ คอนทราสต์ลึกไร้ที่ติ Response Time 0.03ms อัตรารีเฟรช 175Hz รองรับ G-Sync และ DisplayHDR True Black 400",
-    price: "29900.00",
-    imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80",
-    isFeatured: false,
-    isActive: true,
-    sortOrder: 5,
-  },
-  {
-    id: 6,
-    categoryId: 1,
-    categoryName: "Custom Gaming PC",
-    name: "NEXUS Ghost White Mini-ITX Ryzen 7 + RTX 4070 Super",
-    description: "คอมประกอบสายมินิมอลไซส์กะทัดรัด ดีไซน์สีขาวบริสุทธิ์: AMD Ryzen 7 7800X3D (CPU เล่นเกมที่ดีที่สุด) + RTX 4070 Super White Edition + 32GB DDR5 วางบนโต๊ะคอมได้สวยงามไม่เปลืองพื้นที่",
-    price: "52900.00",
-    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80",
-    isFeatured: false,
-    isActive: true,
-    sortOrder: 6,
-  },
-];
-
-export const defaultPromotions: PromotionItem[] = [
-  {
-    id: 1,
-    title: "NEXUS CyberBeast RTX 4090",
-    specs: "i9-14900KS • RTX 4090 • 64GB DDR5 • Custom Loop Water",
-    tag: "ลด ฿20,000",
-    price: "฿139,000",
-    originalPrice: "฿159,000",
-    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80",
-    badge: "🔥 สเปกเรือธง",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    id: 2,
-    title: "PRO-STUDIO Workstation 8K",
-    specs: "Threadripper 7960X • RTX 4080 Super • 128GB ECC",
-    tag: "ลด ฿15,000",
-    price: "฿115,000",
-    originalPrice: "฿130,000",
-    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&auto=format&fit=crop&q=80",
-    badge: "⚡ สำหรับครีเอเตอร์",
-    sortOrder: 2,
-    isActive: true,
-  },
-  {
-    id: 3,
-    title: "ULTRA-VIEW 34\" Curved QD-OLED",
-    specs: "34 นิ้ว 175Hz • 0.03ms • WQHD 21:9 • HDR True Black",
-    tag: "ลด ฿5,000",
-    price: "฿29,900",
-    originalPrice: "฿34,900",
-    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&auto=format&fit=crop&q=80",
-    badge: "⭐ จอระดับโปร",
-    sortOrder: 3,
-    isActive: true,
-  },
-  {
-    id: 4,
-    title: "NEXUS Apex Pro Wireless Keyboard",
-    specs: "Full CNC Aluminum • Custom Linear Switches • Hot-Swap",
-    tag: "ลด ฿1,000",
-    price: "฿4,890",
-    originalPrice: "฿5,890",
-    image: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&auto=format&fit=crop&q=80",
-    badge: "🎁 ยอดนิยม",
-    sortOrder: 4,
-    isActive: true,
-  },
-  {
-    id: 5,
-    title: "NEXUS Vortex Air i7 + RTX 4070 Ti",
-    specs: "i7-14700KF • RTX 4070 Ti Super • AIO 360mm • 32GB",
-    tag: "ลด ฿7,000",
-    price: "฿64,900",
-    originalPrice: "฿71,900",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80",
-    badge: "💥 คุ้มค่าที่สุด",
-    sortOrder: 5,
-    isActive: true,
-  },
-  {
-    id: 6,
-    title: "NEXUS Ghost White Mini-ITX",
-    specs: "Ryzen 7 7800X3D • RTX 4070 Super White • 32GB DDR5",
-    tag: "ลด ฿6,000",
-    price: "฿52,900",
-    originalPrice: "฿58,900",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
-    badge: "🤍 มินิมอลขาวล้วน",
-    sortOrder: 6,
-    isActive: true,
-  },
-  {
-    id: 7,
-    title: "AERO-LIGHT Wireless Mouse 49g",
-    specs: "PAW3395 26K DPI • 4K Polling Rate • Optical Switch",
-    tag: "ลด ฿800",
-    price: "฿2,990",
-    originalPrice: "฿3,790",
-    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80",
-    badge: "🎯 แม่นยำสูง",
-    sortOrder: 7,
-    isActive: true,
-  },
-  {
-    id: 8,
-    title: "GEN5 HyperSpeed NVMe SSD 2TB",
-    specs: "สปีดอ่าน 12,400 MB/s • เขียน 11,800 MB/s • PCIe 5.0",
-    tag: "ลด ฿1,200",
-    price: "฿7,890",
-    originalPrice: "฿9,090",
-    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600&auto=format&fit=crop&q=80",
-    badge: "🚀 เร็วที่สุด",
-    sortOrder: 8,
-    isActive: true,
-  },
-];
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-  const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  if (token && !headers["Authorization"]) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   const config: RequestInit = {
     ...options,
     headers,
-    credentials: "include",
+    credentials: "include", // Rely strictly on secure httpOnly cookie (no localStorage token)
   };
 
   try {
@@ -290,96 +38,16 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     }
     return data;
   } catch (err: any) {
-    // If backend is not reached, provide fallback defaults for public GET requests
-    if (endpoint === "/public/settings") {
-      return { success: true, data: defaultSettings as unknown as T };
-    }
-    if (endpoint === "/public/pages/home") {
-      return { success: true, data: defaultHomePage as unknown as T };
-    }
-    if (endpoint === "/public/pages/about") {
-      return { success: true, data: defaultAboutPage as unknown as T };
-    }
-    if (endpoint === "/public/pages/contact") {
-      return { success: true, data: defaultContactPage as unknown as T };
-    }
-    if (endpoint === "/public/categories") {
-      return { success: true, data: defaultCategories as unknown as T };
-    }
-    if (endpoint.startsWith("/public/services")) {
-      return { success: true, data: defaultServices as unknown as T };
-    }
-    if (endpoint === "/public/featured-services") {
-      return { success: true, data: defaultServices.filter((s) => s.isFeatured) as unknown as T };
-    }
-    if (endpoint === "/public/contact" && options.method === "POST") {
-      return { success: true, message: "ส่งข้อความสำเร็จ ทีมงานวิศวกรจะติดต่อกลับโดยเร็วที่สุด", data: { id: Date.now() } as unknown as T };
-    }
-
-    // Fallback for promotions
-    if (endpoint === "/public/promotions" || (endpoint === "/admin/promotions" && (!options.method || options.method === "GET"))) {
-      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
-      const list = stored ? JSON.parse(stored) : defaultPromotions;
-      return { success: true, data: list as unknown as T };
-    }
-    if (endpoint === "/admin/promotions" && options.method === "POST") {
-      const payload = JSON.parse((options.body as string) || "{}");
-      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
-      const list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
-      const newItem: PromotionItem = {
-        ...payload,
-        id: Date.now(),
-        isActive: payload.isActive ?? true,
-        sortOrder: payload.sortOrder ?? list.length + 1,
-      };
-      list.push(newItem);
-      if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
-      return { success: true, message: "เพิ่มโปรโมชั่นใหม่สำเร็จ", data: newItem as unknown as T };
-    }
-    if (endpoint.startsWith("/admin/promotions/") && options.method === "PUT") {
-      const id = parseInt(endpoint.split("/").pop() || "0", 10);
-      const payload = JSON.parse((options.body as string) || "{}");
-      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
-      const list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
-      const index = list.findIndex((item) => item.id === id);
-      if (index >= 0) {
-        list[index] = { ...list[index], ...payload };
-        if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
-        return { success: true, message: "แก้ไขโปรโมชั่นสำเร็จ", data: list[index] as unknown as T };
-      }
-    }
-    if (endpoint.startsWith("/admin/promotions/") && options.method === "DELETE") {
-      const id = parseInt(endpoint.split("/").pop() || "0", 10);
-      const stored = typeof window !== "undefined" ? localStorage.getItem("nexus_promotions") : null;
-      let list: PromotionItem[] = stored ? JSON.parse(stored) : [...defaultPromotions];
-      list = list.filter((item) => item.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("nexus_promotions", JSON.stringify(list));
-      return { success: true, message: "ลบโปรโมชั่นสำเร็จ", data: {} as unknown as T };
-    }
-
-    // Fallback for pages
-    if (endpoint === "/admin/pages") {
-      const pages = [defaultHomePage, defaultAboutPage, defaultContactPage];
-      return { success: true, data: pages as unknown as T };
-    }
-    if (endpoint.startsWith("/admin/pages/") && options.method === "PUT") {
-      const key = endpoint.split("/").pop();
-      const payload = JSON.parse((options.body as string) || "{}");
-      if (key === "home") Object.assign(defaultHomePage, payload);
-      if (key === "about") Object.assign(defaultAboutPage, payload);
-      if (key === "contact") Object.assign(defaultContactPage, payload);
-      return { success: true, message: "บันทึกเนื้อหาหน้าเรียบร้อยแล้ว", data: payload as unknown as T };
-    }
-
+    console.error(`❌ [API Error] Failed request to ${endpoint}:`, err);
     return {
       success: false,
-      message: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง",
+      message: `ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (${err?.message || "Connection Error"}) กรุณาตรวจสอบสถานะระบบที่ /api/health`,
     };
   }
 }
 
 // -------------------------------------------------------------
-// PUBLIC API
+// PUBLIC & ADMIN API (Purely Cookie-Based Authentication)
 // -------------------------------------------------------------
 export const api = {
   // Public
@@ -396,21 +64,14 @@ export const api = {
       body: JSON.stringify(form),
     }),
 
-  // Auth
+  // Auth (httpOnly cookie managed by server)
   login: async (credentials: { email: string; password: string }) => {
-    const res = await request<{ id: number; email: string; name: string }>("/auth/login", {
+    return await request<{ id: number; email: string; name: string }>("/auth/login", {
       method: "POST",
       body: JSON.stringify(credentials),
     });
-    if (res.success && res.token && typeof window !== "undefined") {
-      localStorage.setItem(TOKEN_KEY, res.token);
-    }
-    return res;
   },
   logout: async () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(TOKEN_KEY);
-    }
     return request("/auth/logout", { method: "POST" });
   },
   getMe: () => request<Admin>("/auth/me"),

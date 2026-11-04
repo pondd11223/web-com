@@ -1,6 +1,19 @@
 {
+  "name": "nexus-pc",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix client run build",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "bun --cwd server run dev"
+  },
   "dependencies": {
     "@neon/config": "^1.10.1",
-    "@neon/env": "^1.6.9"
+    "@neon/env": "^1.6.9",
+    "drizzle-orm": "^0.39.3",
+    "hono": "^4.7.2",
+    "jose": "^5.9.6",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.2"
   }
 }

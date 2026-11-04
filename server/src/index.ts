@@ -59,8 +59,6 @@ app.notFound((c) => {
 });
 
 const PORT = parseInt(process.env.PORT || "5000", 10);
-console.log(`🚀 Server starting on http://localhost:${PORT}`);
-
 (app as any).port = PORT;
 
 export default app;

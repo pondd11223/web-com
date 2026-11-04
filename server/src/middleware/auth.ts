@@ -2,7 +2,12 @@ import type { Context, Next } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET_STRING = process.env.JWT_SECRET || "aura_coffee_starter_secret_key_2026_very_secure_string_here";
+const JWT_SECRET_STRING = process.env.JWT_SECRET;
+if (!JWT_SECRET_STRING) {
+  throw new Error(
+    "❌ JWT_SECRET is not defined! Please set JWT_SECRET in environment variables (Vercel Project Settings)."
+  );
+}
 const secret = new TextEncoder().encode(JWT_SECRET_STRING);
 const COOKIE_NAME = "auth_token";
 
