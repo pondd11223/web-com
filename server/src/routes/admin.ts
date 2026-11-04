@@ -3,6 +3,7 @@ import { eq, desc, asc, ilike, and, sql, count } from "drizzle-orm";
 import { db } from "../db";
 import { settings, pageContents, services, categories, messages, admins, promotions } from "../db/schema";
 import { authGuard, type AdminPayload } from "../middleware/auth";
+import { verifyPassword, hashPassword } from "../utils/password";
 import {
   settingsSchema,
   pageContentSchema,
@@ -442,12 +443,12 @@ adminRouter.put("/change-password", async (c) => {
     return c.json({ success: false, message: "ไม่พบบัญชีผู้ดูแลระบบ" }, 404);
   }
 
-  const isMatch = await Bun.password.verify(currentPassword, adminRecord.password);
+  const isMatch = await verifyPassword(currentPassword, adminRecord.password);
   if (!isMatch) {
     return c.json({ success: false, message: "รหัสผ่านปัจจุบันไม่ถูกต้อง" }, 400);
   }
 
-  const hashedPassword = await Bun.password.hash(newPassword, { algorithm: "bcrypt", cost: 10 });
+  const hashedPassword = await hashPassword(newPassword);
   await db.update(admins).set({ password: hashedPassword }).where(eq(admins.id, adminPayload.id));
 
   return c.json({ success: true, message: "เปลี่ยนรหัสผ่านแอดมินสำเร็จแล้ว กรุณาใช้รหัสผ่านใหม่ในการเข้าสู่ระบบครั้งถัดไป" });

@@ -10,6 +10,7 @@ import {
   authGuard,
   type AdminPayload,
 } from "../middleware/auth";
+import { verifyPassword } from "../utils/password";
 
 const authRouter = new Hono<{ Variables: { admin: AdminPayload } }>();
 
@@ -32,8 +33,8 @@ authRouter.post("/login", async (c) => {
     return c.json({ success: false, message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" }, 401);
   }
 
-  // Verify password with Bun.password
-  const isMatch = await Bun.password.verify(password, admin.password);
+  // Verify password securely across Node.js & Bun
+  const isMatch = await verifyPassword(password, admin.password);
   if (!isMatch) {
     return c.json({ success: false, message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" }, 401);
   }
