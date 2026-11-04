@@ -1,5 +1,5 @@
 import { db, client } from "./index";
-import { admins, categories, services, settings, pageContents, messages } from "./schema";
+import { admins, categories, services, settings, pageContents, messages, promotions } from "./schema";
 import { eq } from "drizzle-orm";
 
 async function seed() {
@@ -31,6 +31,7 @@ async function seed() {
   await db.delete(pageContents);
   await db.delete(settings);
   await db.delete(messages);
+  await db.delete(promotions);
   console.log("🧹 Cleaned old tables for fresh computer store data");
 
   // 3. Create Categories
@@ -250,6 +251,59 @@ async function seed() {
     isRead: false,
   });
   console.log("✅ Sample computer inquiry message seeded");
+
+  // 8. Seed Promotions
+  const samplePromotions = [
+    {
+      title: "NEXUS CyberBeast RTX 4090",
+      specs: "i9-14900KS • RTX 4090 • 64GB DDR5 • Custom Loop Water",
+      tag: "ลด ฿20,000",
+      price: "฿139,000",
+      originalPrice: "฿159,000",
+      image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80",
+      badge: "🔥 สเปกท็อปสุด",
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      title: "PRO-STUDIO Workstation 8K",
+      specs: "Threadripper 7960X • RTX 4080 Super • 128GB ECC",
+      tag: "ลด ฿15,000",
+      price: "฿115,000",
+      originalPrice: "฿130,000",
+      image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&auto=format&fit=crop&q=80",
+      badge: "⚡ สำหรับมือโปร",
+      sortOrder: 2,
+      isActive: true,
+    },
+    {
+      title: "NEXUS Esports Champion",
+      specs: "Ryzen 7 7800X3D • RTX 4070 Ti Super • 32GB RGB",
+      tag: "ยอดนิยม",
+      price: "฿65,900",
+      originalPrice: "฿72,900",
+      image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80",
+      badge: "🏆 เกมมิ่ง 2K/4K",
+      sortOrder: 3,
+      isActive: true,
+    },
+    {
+      title: "NEXUS Starter Gamer Plus",
+      specs: "Core i5-14400F • RTX 4060 8GB • 16GB DDR5",
+      tag: "คุ้มค่าที่สุด",
+      price: "฿27,900",
+      originalPrice: "฿31,500",
+      image: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&auto=format&fit=crop&q=80",
+      badge: "⭐ สตรีมเมอร์เริ่มต้น",
+      sortOrder: 4,
+      isActive: true,
+    },
+  ];
+
+  for (const promo of samplePromotions) {
+    await db.insert(promotions).values(promo);
+  }
+  console.log("✅ 4 Promotions seeded");
 
   console.log("✨ Computer Store Seeding completed successfully!");
   await client.end();
