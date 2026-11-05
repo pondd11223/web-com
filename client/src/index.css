@@ -72,6 +72,15 @@
   background: #71717A;
 }
 
+/* Hide scrollbar for clean horizontal scroller */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Keyframes for smooth entrance animations */
 @keyframes fadeInScale {
   0% {
