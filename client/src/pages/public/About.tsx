@@ -240,19 +240,19 @@ export function About() {
                 className="group bg-white rounded-3xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Image */}
-                <div className="relative h-56 overflow-hidden bg-zinc-100">
+                <div className="relative h-44 overflow-hidden bg-zinc-50 border-b border-zinc-100">
                   <img
                     src={item.imageUrl}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {item.categoryName && (
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-semibold bg-white/95 backdrop-blur-md text-zinc-900 border border-zinc-200 shadow-sm">
+                    <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/95 backdrop-blur-md text-zinc-900 border border-zinc-200 shadow-sm">
                       {item.categoryName}
                     </span>
                   )}
                   {item.isFeatured && (
-                    <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black text-white shadow-sm">
+                    <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black text-white shadow-sm">
                       ★ แนะนำ
                     </span>
                   )}

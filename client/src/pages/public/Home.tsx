@@ -541,10 +541,10 @@ export function Home() {
               {[...promotions, ...promotions, ...promotions].map((item, idx) => (
                 <div
                   key={`${item.id}-${idx}`}
-                  className="w-80 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group/card"
+                  className="w-72 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-3.5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group/card"
                 >
-                  {/* Product Image */}
-                  <div className="relative h-44 rounded-xl overflow-hidden bg-zinc-100 mb-3">
+                  {/* Product Image - reduced by ~20% for elegant proportion */}
+                  <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2.5">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -554,26 +554,26 @@ export function Home() {
                           "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                       }}
                     />
-                    <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-black text-white shadow-sm">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
                       {item.badge}
                     </div>
-                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-600 text-white shadow-sm">
+                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white shadow-sm">
                       {item.tag}
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="space-y-1.5 flex-1">
+                  <div className="space-y-1 flex-1">
                     <h4 className="font-bold text-sm text-black group-hover/card:text-zinc-700 transition-colors line-clamp-1">
                       {item.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 font-light line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-zinc-500 font-light line-clamp-2 leading-relaxed">
                       {item.specs}
                     </p>
                   </div>
 
                   {/* Price & Action */}
-                  <div className="pt-3 mt-2 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="pt-2.5 mt-2 border-t border-zinc-100 flex items-center justify-between">
                     <div>
                       {item.originalPrice && (
                         <span className="text-[10px] text-zinc-400 line-through block font-medium">
@@ -597,10 +597,10 @@ export function Home() {
                           description: item.specs,
                         },
                       }}
-                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
                     >
-                      <span>สั่งจองโปรนี้</span>
-                      <ArrowRight size={13} />
+                      <span>สั่งจอง</span>
+                      <ArrowRight size={12} />
                     </Link>
                   </div>
                 </div>
@@ -616,7 +616,7 @@ export function Home() {
                   key={item.id}
                   className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                 >
-                  <div className="relative h-44 rounded-xl overflow-hidden bg-zinc-100 mb-3">
+                  <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2.5">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -626,10 +626,10 @@ export function Home() {
                           "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                       }}
                     />
-                    <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-black text-white shadow-sm">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
                       {item.badge}
                     </div>
-                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-600 text-white shadow-sm">
+                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white shadow-sm">
                       {item.tag}
                     </div>
                   </div>
@@ -743,8 +743,8 @@ export function Home() {
               key={service.id}
               className="group bg-white rounded-3xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
-              {/* Product Image */}
-              <div className="relative h-64 overflow-hidden bg-zinc-100">
+              {/* Product Image - reduced by 20% for elegant proportion */}
+              <div className="relative h-52 overflow-hidden bg-zinc-50 border-b border-zinc-100">
                 <img
                   src={service.imageUrl}
                   alt={service.name}
@@ -1006,7 +1006,7 @@ export function Home() {
                         className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                       >
                         {/* Image */}
-                        <div className="relative h-48 rounded-xl overflow-hidden bg-zinc-100 mb-3.5">
+                        <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-3">
                           <img
                             src={item.image}
                             alt={item.title}
@@ -1016,10 +1016,10 @@ export function Home() {
                                 "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                             }}
                           />
-                          <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-black text-white shadow-sm">
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 backdrop-blur-md text-white shadow-sm">
                             {item.badge}
                           </div>
-                          <div className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-600 text-white shadow-sm">
+                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/90 backdrop-blur-md text-white shadow-sm">
                             {item.tag}
                           </div>
                         </div>
