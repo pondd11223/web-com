@@ -221,9 +221,9 @@ export function About() {
 
         {/* Services / Hardware Cards Grid */}
         {loadingServices ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-80 bg-zinc-100 rounded-3xl animate-pulse border border-zinc-200" />
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-64 bg-zinc-100 rounded-2xl animate-pulse border border-zinc-200" />
             ))}
           </div>
         ) : filteredServices.length === 0 ? (
@@ -233,46 +233,46 @@ export function About() {
             <p className="text-xs text-zinc-500 mt-1">ลองเปลี่ยนคำค้นหา หรือเลือกดูหมวดหมู่อื่น</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-5">
             {filteredServices.map((item) => (
               <div
                 key={item.id}
-                className="group bg-white rounded-3xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                className="group bg-white rounded-2xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Image */}
-                <div className="relative h-44 overflow-hidden bg-zinc-50 border-b border-zinc-100">
+                <div className="relative h-36 overflow-hidden bg-zinc-50 border-b border-zinc-100">
                   <img
                     src={item.imageUrl}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {item.categoryName && (
-                    <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/95 backdrop-blur-md text-zinc-900 border border-zinc-200 shadow-sm">
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-white/95 backdrop-blur-md text-zinc-900 border border-zinc-200 shadow-sm">
                       {item.categoryName}
                     </span>
                   )}
                   {item.isFeatured && (
-                    <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black text-white shadow-sm">
+                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-black text-white shadow-sm">
                       ★ แนะนำ
                     </span>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <h3 className="font-bold text-base text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
+                    <h3 className="font-bold text-xs sm:text-sm text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-zinc-600 mt-1.5 leading-relaxed line-clamp-3 font-light">
+                    <p className="text-[10px] sm:text-[11px] text-zinc-600 mt-1 leading-relaxed line-clamp-2 font-light">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="pt-2 border-t border-zinc-100 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-zinc-400 uppercase font-semibold">ราคา</span>
-                      <p className="text-lg font-black text-black">
+                      <span className="text-[9px] text-zinc-400 uppercase font-semibold">ราคา</span>
+                      <p className="text-sm sm:text-base font-black text-black">
                         ฿{Number(item.price).toLocaleString("th-TH", { minimumFractionDigits: 0 })}
                       </p>
                     </div>
@@ -289,7 +289,7 @@ export function About() {
                           description: item.description,
                         },
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-black hover:bg-zinc-800 text-xs font-bold text-white transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                      className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-black hover:bg-zinc-800 text-[10px] sm:text-xs font-bold text-white transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       สั่งจอง / ปรึกษา
                     </Link>

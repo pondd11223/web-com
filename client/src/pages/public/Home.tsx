@@ -535,16 +535,16 @@ export function Home() {
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUpOrLeave}
-              className="flex items-stretch gap-5 overflow-x-auto no-scrollbar scroll-smooth px-4 select-none cursor-grab active:cursor-grabbing"
+              className="flex items-stretch gap-4 overflow-x-auto no-scrollbar scroll-smooth px-4 select-none cursor-grab active:cursor-grabbing"
               style={{ scrollBehavior: "auto" }}
             >
               {[...promotions, ...promotions, ...promotions].map((item, idx) => (
                 <div
                   key={`${item.id}-${idx}`}
-                  className="w-72 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-3.5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group/card"
+                  className="w-64 shrink-0 bg-white rounded-2xl border border-zinc-200 hover:border-black p-3 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group/card"
                 >
-                  {/* Product Image - reduced by ~20% for elegant proportion */}
-                  <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2.5">
+                  {/* Product Image - reduced width & height by 20% */}
+                  <div className="relative h-32 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -554,33 +554,33 @@ export function Home() {
                           "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                       }}
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
+                    <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
                       {item.badge}
                     </div>
-                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white shadow-sm">
+                    <div className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-sm">
                       {item.tag}
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="space-y-1 flex-1">
-                    <h4 className="font-bold text-sm text-black group-hover/card:text-zinc-700 transition-colors line-clamp-1">
+                    <h4 className="font-bold text-xs sm:text-sm text-black group-hover/card:text-zinc-700 transition-colors line-clamp-1">
                       {item.title}
                     </h4>
-                    <p className="text-[11px] text-zinc-500 font-light line-clamp-2 leading-relaxed">
+                    <p className="text-[10px] sm:text-[11px] text-zinc-500 font-light line-clamp-2 leading-relaxed">
                       {item.specs}
                     </p>
                   </div>
 
                   {/* Price & Action */}
-                  <div className="pt-2.5 mt-2 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="pt-2 mt-2 border-t border-zinc-100 flex items-center justify-between">
                     <div>
                       {item.originalPrice && (
-                        <span className="text-[10px] text-zinc-400 line-through block font-medium">
+                        <span className="text-[9px] text-zinc-400 line-through block font-medium">
                           {item.originalPrice}
                         </span>
                       )}
-                      <span className="text-base font-black text-black">
+                      <span className="text-sm sm:text-base font-black text-black">
                         {item.price}
                       </span>
                     </div>
@@ -597,10 +597,10 @@ export function Home() {
                           description: item.specs,
                         },
                       }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black text-white text-[11px] font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
                     >
                       <span>สั่งจอง</span>
-                      <ArrowRight size={12} />
+                      <ArrowRight size={11} />
                     </Link>
                   </div>
                 </div>
@@ -609,14 +609,14 @@ export function Home() {
           </div>
         ) : (
           /* View Mode: GRID (All Promotions on page) */
-          <div className="bg-zinc-50/70 rounded-3xl border border-zinc-200 p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="bg-zinc-50/70 rounded-3xl border border-zinc-200 p-4 sm:p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
               {promotions.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-3 sm:p-3.5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                 >
-                  <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2.5">
+                  <div className="relative h-32 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -626,31 +626,31 @@ export function Home() {
                           "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                       }}
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
+                    <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-black/90 text-white shadow-sm backdrop-blur-xs">
                       {item.badge}
                     </div>
-                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white shadow-sm">
+                    <div className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-sm">
                       {item.tag}
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 flex-1">
-                    <h4 className="font-bold text-sm text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
+                  <div className="space-y-1 flex-1">
+                    <h4 className="font-bold text-xs sm:text-sm text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
                       {item.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 font-light line-clamp-2 leading-relaxed">
+                    <p className="text-[10px] sm:text-[11px] text-zinc-500 font-light line-clamp-2 leading-relaxed">
                       {item.specs}
                     </p>
                   </div>
 
-                  <div className="pt-3 mt-2 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="pt-2 mt-2 border-t border-zinc-100 flex items-center justify-between">
                     <div>
                       {item.originalPrice && (
-                        <span className="text-[10px] text-zinc-400 line-through block font-medium">
+                        <span className="text-[9px] text-zinc-400 line-through block font-medium">
                           {item.originalPrice}
                         </span>
                       )}
-                      <span className="text-base font-black text-black">
+                      <span className="text-sm sm:text-base font-black text-black">
                         {item.price}
                       </span>
                     </div>
@@ -667,10 +667,10 @@ export function Home() {
                           description: item.specs,
                         },
                       }}
-                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black text-white text-[11px] font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
                     >
-                      <span>สั่งจองโปรนี้</span>
-                      <ArrowRight size={13} />
+                      <span>สั่งจอง</span>
+                      <ArrowRight size={11} />
                     </Link>
                   </div>
                 </div>
@@ -737,44 +737,44 @@ export function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {featuredServices.map((service) => (
             <div
               key={service.id}
-              className="group bg-white rounded-3xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="group bg-white rounded-2xl overflow-hidden border border-zinc-200 hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
-              {/* Product Image - reduced by 20% for elegant proportion */}
-              <div className="relative h-52 overflow-hidden bg-zinc-50 border-b border-zinc-100">
+              {/* Product Image - reduced width & height by 20% */}
+              <div className="relative h-40 overflow-hidden bg-zinc-50 border-b border-zinc-100">
                 <img
                   src={service.imageUrl}
                   alt={service.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {service.categoryName && (
-                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold bg-white/95 text-zinc-900 border border-zinc-200 shadow-sm backdrop-blur-md">
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/95 text-zinc-900 border border-zinc-200 shadow-sm backdrop-blur-md">
                     {service.categoryName}
                   </span>
                 )}
-                <span className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[11px] font-bold bg-black text-white shadow-md">
+                <span className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black text-white shadow-md">
                   ★ สเปกแนะนำ
                 </span>
               </div>
 
               {/* Product Info */}
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <h3 className="text-lg font-bold text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
+                  <h3 className="text-base font-bold text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
                     {service.name}
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 mt-2 leading-relaxed line-clamp-3 font-light">
+                  <p className="text-xs text-zinc-600 mt-1.5 leading-relaxed line-clamp-2 font-light">
                     {service.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-zinc-100 flex items-center justify-between gap-2">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-zinc-400 uppercase font-semibold">ราคาเริ่มต้น</span>
-                    <span className="text-xl font-black text-black">
+                    <span className="text-[9px] text-zinc-400 uppercase font-semibold">ราคาเริ่มต้น</span>
+                    <span className="text-lg font-black text-black">
                       ฿{Number(service.price).toLocaleString("th-TH", { minimumFractionDigits: 0 })}
                     </span>
                   </div>
@@ -792,7 +792,7 @@ export function Home() {
                           description: service.description,
                         },
                       }}
-                      className="px-3.5 py-2 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-bold transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-bold transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       ปรึกษาสเปกนี้
                     </Link>
@@ -984,7 +984,7 @@ export function Home() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                   {promotions
                     .filter((item) => {
                       const q = promoSearchQuery.toLowerCase();
@@ -1003,10 +1003,10 @@ export function Home() {
                     .map((item) => (
                       <div
                         key={item.id}
-                        className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                        className="bg-white rounded-2xl border border-zinc-200 hover:border-black p-3 sm:p-3.5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                       >
                         {/* Image */}
-                        <div className="relative h-36 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-3">
+                        <div className="relative h-32 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 mb-2">
                           <img
                             src={item.image}
                             alt={item.title}
@@ -1016,33 +1016,33 @@ export function Home() {
                                 "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80";
                             }}
                           />
-                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/90 backdrop-blur-md text-white shadow-sm">
+                          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-black/90 backdrop-blur-md text-white shadow-sm">
                             {item.badge}
                           </div>
-                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/90 backdrop-blur-md text-white shadow-sm">
+                          <div className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600/90 backdrop-blur-md text-white shadow-sm">
                             {item.tag}
                           </div>
                         </div>
 
                         {/* Text */}
-                        <div className="space-y-2 flex-1">
-                          <h4 className="font-bold text-sm text-black group-hover:text-zinc-700 transition-colors line-clamp-2">
+                        <div className="space-y-1 flex-1">
+                          <h4 className="font-bold text-xs sm:text-sm text-black group-hover:text-zinc-700 transition-colors line-clamp-1">
                             {item.title}
                           </h4>
-                          <p className="text-xs text-zinc-500 font-light line-clamp-3 leading-relaxed">
+                          <p className="text-[10px] sm:text-[11px] text-zinc-500 font-light line-clamp-2 leading-relaxed">
                             {item.specs}
                           </p>
                         </div>
 
                         {/* Price & Action */}
-                        <div className="pt-3.5 mt-3 border-t border-zinc-100 flex items-center justify-between">
+                        <div className="pt-2 mt-2 border-t border-zinc-100 flex items-center justify-between">
                           <div>
                             {item.originalPrice && (
-                              <span className="text-[11px] text-zinc-400 line-through block font-medium">
+                              <span className="text-[9px] text-zinc-400 line-through block font-medium">
                                 {item.originalPrice}
                               </span>
                             )}
-                            <span className="text-lg font-black text-black">
+                            <span className="text-sm sm:text-base font-black text-black">
                               {item.price}
                             </span>
                           </div>
@@ -1060,10 +1060,10 @@ export function Home() {
                               },
                             }}
                             onClick={() => setShowAllPromosModal(false)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black text-white text-[11px] font-bold hover:bg-zinc-800 transition-colors shadow-sm cursor-pointer"
                           >
-                            <span>สั่งจองโปรนี้</span>
-                            <ArrowRight size={13} />
+                            <span>สั่งจอง</span>
+                            <ArrowRight size={11} />
                           </Link>
                         </div>
                       </div>
